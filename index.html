@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2000B1">
-<title>Exploration with AI — Google DevFest 2026</title>
+<title>Welcome to the AI Playground — Google DevFest 2026</title>
 
 <style>
 /* ───────── Theme ─────────
@@ -271,6 +271,57 @@ body.portrait .slide[data-qr] .main{margin-bottom:560px}
 body.portrait .qr{left:56px;right:auto;top:auto;bottom:170px;margin:0;width:380px;height:380px}
 body.portrait #ui{right:24px;bottom:26px}
 
+/* DevFest logo: recoloured by the theme. For the original full-colour logo set:
+   --lw:#fff; --ld:#202124; --ly:#FDD531; --lt:#fff */
+.logo{
+  position:absolute;top:34px;right:88px;width:150px;height:auto;display:block;
+  --lw:var(--fg);--ld:var(--bg);--ly:var(--fg);--lt:var(--bg);
+  animation:fade 700ms ease 300ms both;
+}
+.logo .lw{fill:var(--lw)}.logo .ld{fill:var(--ld)}.logo .ly{fill:var(--ly)}.logo .lt{fill:var(--lt)}.logo .ls{stroke:var(--ld)}
+body.portrait .logo{top:30px;right:56px;width:128px}
+body.portrait .kicker{max-width:calc(100% - 156px)}
+
+/* prompt: types itself in, with a caret; click or tap copies */
+.prompt{position:relative;cursor:pointer}
+.prompt .wi,.prompt .qe,.prompt .caret{animation:typein 1ms steps(1,end) both;animation-delay:calc(var(--d,0) * 1ms + 260ms)}
+.prompt .qe{color:var(--panel-label);font-weight:800;margin-left:-.02em}
+.prompt .caret{
+  display:inline-block;margin-left:.12em;font-weight:800;
+  animation:typein 1ms steps(1,end) both,blink 1.05s steps(1,end) infinite;
+  animation-delay:calc(var(--d,0) * 1ms + 260ms),calc(var(--d,0) * 1ms + 260ms);
+}
+.prompt p::after{content:none}
+.copyhint{
+  position:absolute;top:15px;right:24px;
+  font-family:var(--mono);font-weight:700;font-size:14px;line-height:1;letter-spacing:.08em;text-transform:uppercase;color:var(--panel-fg);
+}
+@keyframes typein{from{opacity:0}}
+@keyframes blink{50%{opacity:0}}
+
+/* build timer chip */
+#timer{
+  position:absolute;top:36px;right:262px;z-index:25;display:none;
+  font-family:var(--head);font-size:30px;line-height:1.55;letter-spacing:.02em;white-space:nowrap;
+  padding:0 .4em;border-radius:.12em;background:var(--hl-bg);color:var(--hl-fg);
+}
+#timer.on{display:block;animation:fade 300ms ease both}
+body.portrait #timer{top:28px;right:206px;font-size:26px}
+
+/* overlays: idea roulette + help */
+.ov{position:absolute;inset:0;z-index:40;display:none;background:var(--bg);color:var(--fg);overflow:hidden;cursor:pointer}
+.ov.on{display:block;animation:bgin 240ms ease both}
+.ovw{position:absolute;inset:0;padding:54px 88px 0;display:flex;flex-direction:column}
+.ovk{font-family:var(--mono);font-weight:700;font-size:20px;line-height:1.1;letter-spacing:.08em;text-transform:uppercase}
+.ovmain{flex:1;min-height:0;margin:22px 0 98px;display:flex;flex-direction:column;justify-content:center}
+.ovbig{width:100%;font-family:var(--head);text-transform:uppercase;line-height:1.38;letter-spacing:-.004em;word-spacing:.08em;text-wrap:balance}
+.ovfoot{position:absolute;left:88px;bottom:44px;font-family:var(--mono);font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.helpl{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:14px 36px;align-items:center;font-family:var(--mono);font-weight:700;font-size:23px}
+.helpl li{display:contents}
+.helpl .k{justify-self:start;background:var(--hl-bg);color:var(--hl-fg);padding:.1em .55em;border-radius:.2em;white-space:nowrap}
+body.portrait .ovw{padding:60px 56px 0}
+body.portrait .ovfoot{left:56px;bottom:58px}
+
 /* ───────── Reduced motion: plain fades, static loader ───────── */
 @media (prefers-reduced-motion:reduce){
   .slide{animation:fade 200ms linear both}
@@ -282,6 +333,8 @@ body.portrait #ui{right:24px;bottom:26px}
   #ldticker .track{animation:none}
   .slam{animation:none}
   .hl{animation:none}
+  .prompt .wi,.prompt .qe{animation:none}
+  .prompt .caret{display:none}
   .qr{animation:fade 200ms linear both}
 }
 </style>
@@ -293,12 +346,15 @@ body.portrait #ui{right:24px;bottom:26px}
 </style>
 <!-- QR code (LinkedIn · in/nkchaudhary01) as vector modules: 41×41 grid. Safe to ignore. -->
 <script>window.QR={n:41,d:"M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM14 0h2v1h-2zM19 0h1v1h-1zM23 0h3v1h-3zM27 0h3v1h-3zM34 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM14 1h1v1h-1zM17 1h1v1h-1zM21 1h1v1h-1zM23 1h4v1h-4zM29 1h1v1h-1zM31 1h2v1h-2zM34 1h1v1h-1zM40 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM14 2h2v1h-2zM19 2h1v1h-1zM21 2h1v1h-1zM23 2h1v1h-1zM26 2h1v1h-1zM31 2h1v1h-1zM34 2h1v1h-1zM36 2h3v1h-3zM40 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h3v1h-3zM21 3h3v1h-3zM27 3h4v1h-4zM34 3h1v1h-1zM36 3h3v1h-3zM40 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h6v1h-6zM19 4h2v1h-2zM23 4h1v1h-1zM27 4h2v1h-2zM30 4h1v1h-1zM34 4h1v1h-1zM36 4h3v1h-3zM40 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h4v1h-4zM14 5h11v1h-11zM28 5h2v1h-2zM31 5h1v1h-1zM34 5h1v1h-1zM40 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h7v1h-7zM8 7h1v1h-1zM11 7h2v1h-2zM15 7h4v1h-4zM21 7h2v1h-2zM24 7h1v1h-1zM26 7h1v1h-1zM29 7h4v1h-4zM4 8h4v1h-4zM10 8h3v1h-3zM14 8h1v1h-1zM22 8h2v1h-2zM26 8h2v1h-2zM29 8h1v1h-1zM34 8h2v1h-2zM39 8h1v1h-1zM2 9h1v1h-1zM5 9h1v1h-1zM8 9h2v1h-2zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h1v1h-1zM22 9h2v1h-2zM27 9h3v1h-3zM34 9h4v1h-4zM40 9h1v1h-1zM1 10h1v1h-1zM3 10h1v1h-1zM6 10h3v1h-3zM10 10h2v1h-2zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h5v1h-5zM32 10h1v1h-1zM40 10h1v1h-1zM0 11h2v1h-2zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h2v1h-2zM12 11h2v1h-2zM18 11h1v1h-1zM20 11h1v1h-1zM22 11h4v1h-4zM27 11h1v1h-1zM29 11h4v1h-4zM34 11h1v1h-1zM37 11h1v1h-1zM0 12h2v1h-2zM4 12h6v1h-6zM12 12h2v1h-2zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h3v1h-3zM24 12h2v1h-2zM27 12h1v1h-1zM29 12h2v1h-2zM39 12h2v1h-2zM0 13h1v1h-1zM4 13h2v1h-2zM7 13h4v1h-4zM13 13h1v1h-1zM17 13h4v1h-4zM22 13h1v1h-1zM24 13h1v1h-1zM26 13h1v1h-1zM28 13h10v1h-10zM40 13h1v1h-1zM0 14h3v1h-3zM6 14h1v1h-1zM9 14h1v1h-1zM11 14h2v1h-2zM15 14h2v1h-2zM18 14h1v1h-1zM24 14h2v1h-2zM28 14h2v1h-2zM32 14h3v1h-3zM37 14h2v1h-2zM40 14h1v1h-1zM0 15h2v1h-2zM5 15h1v1h-1zM9 15h3v1h-3zM15 15h3v1h-3zM19 15h1v1h-1zM23 15h4v1h-4zM29 15h2v1h-2zM35 15h3v1h-3zM3 16h4v1h-4zM8 16h1v1h-1zM10 16h3v1h-3zM14 16h2v1h-2zM18 16h2v1h-2zM22 16h1v1h-1zM24 16h1v1h-1zM26 16h2v1h-2zM29 16h3v1h-3zM35 16h1v1h-1zM37 16h1v1h-1zM40 16h1v1h-1zM0 17h3v1h-3zM4 17h1v1h-1zM7 17h4v1h-4zM13 17h1v1h-1zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h4v1h-4zM33 17h6v1h-6zM40 17h1v1h-1zM2 18h1v1h-1zM5 18h5v1h-5zM11 18h3v1h-3zM15 18h1v1h-1zM18 18h1v1h-1zM20 18h3v1h-3zM25 18h1v1h-1zM27 18h1v1h-1zM29 18h1v1h-1zM32 18h1v1h-1zM35 18h1v1h-1zM37 18h2v1h-2zM40 18h1v1h-1zM1 19h5v1h-5zM9 19h2v1h-2zM12 19h1v1h-1zM19 19h1v1h-1zM22 19h1v1h-1zM24 19h3v1h-3zM29 19h2v1h-2zM33 19h1v1h-1zM35 19h1v1h-1zM37 19h1v1h-1zM39 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h4v1h-4zM13 20h1v1h-1zM16 20h5v1h-5zM22 20h2v1h-2zM25 20h1v1h-1zM27 20h1v1h-1zM30 20h3v1h-3zM35 20h1v1h-1zM37 20h1v1h-1zM39 20h2v1h-2zM0 21h1v1h-1zM4 21h2v1h-2zM7 21h2v1h-2zM15 21h2v1h-2zM19 21h1v1h-1zM21 21h3v1h-3zM25 21h1v1h-1zM27 21h1v1h-1zM34 21h1v1h-1zM36 21h1v1h-1zM40 21h1v1h-1zM0 22h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM8 22h2v1h-2zM11 22h3v1h-3zM16 22h1v1h-1zM18 22h2v1h-2zM22 22h2v1h-2zM26 22h3v1h-3zM30 22h1v1h-1zM32 22h1v1h-1zM34 22h4v1h-4zM40 22h1v1h-1zM2 23h1v1h-1zM4 23h2v1h-2zM9 23h1v1h-1zM11 23h1v1h-1zM14 23h3v1h-3zM18 23h5v1h-5zM24 23h1v1h-1zM29 23h3v1h-3zM33 23h3v1h-3zM37 23h1v1h-1zM39 23h1v1h-1zM4 24h3v1h-3zM8 24h1v1h-1zM13 24h1v1h-1zM15 24h2v1h-2zM18 24h1v1h-1zM20 24h2v1h-2zM24 24h1v1h-1zM26 24h2v1h-2zM29 24h1v1h-1zM31 24h3v1h-3zM35 24h1v1h-1zM38 24h1v1h-1zM0 25h1v1h-1zM3 25h2v1h-2zM7 25h2v1h-2zM10 25h1v1h-1zM12 25h1v1h-1zM15 25h1v1h-1zM17 25h1v1h-1zM24 25h1v1h-1zM27 25h3v1h-3zM32 25h1v1h-1zM34 25h3v1h-3zM38 25h1v1h-1zM40 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM6 26h2v1h-2zM11 26h3v1h-3zM15 26h1v1h-1zM18 26h3v1h-3zM24 26h5v1h-5zM30 26h1v1h-1zM32 26h3v1h-3zM40 26h1v1h-1zM0 27h4v1h-4zM5 27h1v1h-1zM7 27h2v1h-2zM14 27h1v1h-1zM17 27h1v1h-1zM24 27h1v1h-1zM29 27h4v1h-4zM34 27h2v1h-2zM37 27h1v1h-1zM39 27h1v1h-1zM0 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM11 28h1v1h-1zM17 28h2v1h-2zM20 28h2v1h-2zM26 28h4v1h-4zM32 28h1v1h-1zM0 29h5v1h-5zM8 29h1v1h-1zM10 29h2v1h-2zM15 29h1v1h-1zM19 29h2v1h-2zM22 29h1v1h-1zM25 29h2v1h-2zM30 29h2v1h-2zM35 29h2v1h-2zM38 29h1v1h-1zM40 29h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM12 30h2v1h-2zM17 30h4v1h-4zM23 30h3v1h-3zM27 30h1v1h-1zM29 30h1v1h-1zM31 30h1v1h-1zM33 30h1v1h-1zM35 30h1v1h-1zM37 30h1v1h-1zM40 30h1v1h-1zM3 31h3v1h-3zM7 31h1v1h-1zM13 31h3v1h-3zM18 31h1v1h-1zM20 31h1v1h-1zM22 31h2v1h-2zM26 31h4v1h-4zM31 31h3v1h-3zM37 31h1v1h-1zM39 31h1v1h-1zM0 32h2v1h-2zM5 32h3v1h-3zM9 32h1v1h-1zM11 32h1v1h-1zM13 32h1v1h-1zM19 32h1v1h-1zM21 32h2v1h-2zM24 32h3v1h-3zM28 32h3v1h-3zM32 32h6v1h-6zM39 32h2v1h-2zM8 33h1v1h-1zM13 33h2v1h-2zM16 33h1v1h-1zM18 33h2v1h-2zM21 33h1v1h-1zM25 33h3v1h-3zM29 33h1v1h-1zM31 33h2v1h-2zM36 33h2v1h-2zM40 33h1v1h-1zM0 34h7v1h-7zM8 34h2v1h-2zM11 34h1v1h-1zM14 34h2v1h-2zM20 34h2v1h-2zM23 34h2v1h-2zM27 34h1v1h-1zM30 34h3v1h-3zM34 34h1v1h-1zM36 34h1v1h-1zM40 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM8 35h1v1h-1zM12 35h4v1h-4zM17 35h1v1h-1zM19 35h1v1h-1zM21 35h2v1h-2zM24 35h2v1h-2zM27 35h2v1h-2zM31 35h2v1h-2zM36 35h2v1h-2zM40 35h1v1h-1zM0 36h1v1h-1zM2 36h3v1h-3zM6 36h1v1h-1zM8 36h1v1h-1zM12 36h1v1h-1zM15 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM25 36h1v1h-1zM31 36h7v1h-7zM40 36h1v1h-1zM0 37h1v1h-1zM2 37h3v1h-3zM6 37h1v1h-1zM9 37h3v1h-3zM13 37h1v1h-1zM15 37h3v1h-3zM20 37h2v1h-2zM23 37h3v1h-3zM27 37h2v1h-2zM30 37h3v1h-3zM35 37h1v1h-1zM37 37h4v1h-4zM0 38h1v1h-1zM2 38h3v1h-3zM6 38h1v1h-1zM9 38h1v1h-1zM11 38h1v1h-1zM13 38h1v1h-1zM17 38h1v1h-1zM19 38h3v1h-3zM23 38h2v1h-2zM26 38h2v1h-2zM30 38h1v1h-1zM32 38h2v1h-2zM37 38h1v1h-1zM39 38h2v1h-2zM0 39h1v1h-1zM6 39h1v1h-1zM10 39h1v1h-1zM12 39h1v1h-1zM14 39h1v1h-1zM18 39h1v1h-1zM22 39h1v1h-1zM25 39h1v1h-1zM27 39h4v1h-4zM32 39h1v1h-1zM35 39h1v1h-1zM37 39h1v1h-1zM39 39h2v1h-2zM0 40h7v1h-7zM9 40h3v1h-3zM13 40h1v1h-1zM15 40h1v1h-1zM20 40h1v1h-1zM23 40h1v1h-1zM27 40h1v1h-1zM29 40h2v1h-2zM32 40h1v1h-1zM34 40h3v1h-3zM38 40h2v1h-2z"};</script>
+<!-- DevFest logo (supplied SVG, sanitised: paths only). Colours follow the theme; see .logo in the CSS. -->
+<script>window.LOGO="<svg class=\"logo\" viewBox=\"0 0 218 84\" fill=\"none\" role=\"img\" aria-label=\"DevFest Noida 2026\" focusable=\"false\"><path class=\"lw ls\" d=\"M213.089 30.2827H209.093C207.669 30.2827 206.513 29.1283 206.513 27.7014V13.4038C206.513 6.27663 200.738 0.5 193.614 0.5H184.608C184.037 0.5 183.576 0.961213 183.576 1.532V16.0105C183.576 16.5813 184.037 17.0425 184.608 17.0425H191.217C192.641 17.0425 193.798 18.1968 193.798 19.6238V58.7759C193.798 60.2004 192.644 61.3572 191.217 61.3572H184.608C184.037 61.3572 183.576 61.8184 183.576 62.3892V76.8677C183.576 77.4385 184.037 77.8997 184.608 77.8997H193.614C200.738 77.8997 206.513 72.1231 206.513 64.9959V50.0537C206.513 48.6293 207.667 47.4724 209.093 47.4724H213.089C213.66 47.4724 214.121 47.0112 214.121 46.4404V31.3172C214.121 30.7464 213.66 30.2852 213.089 30.2852V30.2827Z\" stroke-linejoin=\"round\"/><path class=\"lw ls\" d=\"M4.30527 30.2827H8.30164C9.72546 30.2827 10.8819 29.1283 10.8819 27.7014V13.4038C10.8819 6.27663 16.6562 0.5 23.7804 0.5H32.7869C33.3574 0.5 33.8185 0.961213 33.8185 1.532V16.0105C33.8185 16.5813 33.3574 17.0425 32.7869 17.0425H26.1772C24.7534 17.0425 23.597 18.1968 23.597 19.6238V58.7759C23.597 60.2004 24.7508 61.3572 26.1772 61.3572H32.7869C33.3574 61.3572 33.8185 61.8184 33.8185 62.3892V76.8677C33.8185 77.4385 33.3574 77.8997 32.7869 77.8997H23.7804C16.6562 77.8997 10.8819 72.1231 10.8819 64.9959V50.0537C10.8819 48.6293 9.72801 47.4724 8.30164 47.4724H4.30527C3.73472 47.4724 3.27368 47.0112 3.27368 46.4404V31.3172C3.27368 30.7464 3.73472 30.2852 4.30527 30.2852V30.2827Z\" stroke-linejoin=\"round\"/><path class=\"lw\" d=\"M58.8112 9.86677C56.8778 8.80779 54.585 8.27344 51.9229 8.27344H43.4316V33.3879H51.9229C54.585 33.3879 56.8875 32.8632 58.8112 31.814C60.7446 30.7647 62.2213 29.288 63.2706 27.3934C64.3101 25.4989 64.8348 23.313 64.8348 20.8355C64.8348 18.3581 64.3101 16.1721 63.2706 14.297C62.231 12.4122 60.7446 10.9452 58.8112 9.87649V9.86677ZM59.1318 25.0714C58.51 26.2859 57.5871 27.2283 56.3435 27.8986C55.0999 28.569 53.5649 28.8993 51.7092 28.8993H48.1631V12.762H51.7092C53.5551 12.762 55.0999 13.0923 56.3435 13.7627C57.5871 14.433 58.51 15.3657 59.1318 16.5704C59.7536 17.7751 60.0645 19.1936 60.0645 20.8355C60.0645 22.4774 59.7536 23.8667 59.1318 25.0812V25.0714Z\"/><path class=\"lw\" d=\"M81.1443 16.1616C79.8328 15.3455 78.22 14.9375 76.306 14.9375C74.3921 14.9375 72.9542 15.3747 71.5746 16.2491C70.195 17.1235 69.1069 18.2893 68.3102 19.7369C67.5136 21.1845 67.1152 22.7682 67.1152 24.4684C67.1152 26.1686 67.5233 27.9173 68.3297 29.3455C69.136 30.7737 70.2436 31.891 71.6621 32.7168C73.0805 33.5329 74.6836 33.9409 76.4809 33.9409C78.2783 33.9409 80.1437 33.5134 81.4941 32.6585C82.8543 31.8035 83.9521 30.6377 84.7876 29.1706L81.0666 27.3441C80.6489 28.0728 80.0562 28.6751 79.3081 29.1512C78.56 29.6273 77.6371 29.8701 76.5392 29.8701C75.4414 29.8701 74.7516 29.6564 73.9938 29.2192C73.236 28.782 72.6336 28.1602 72.1867 27.3247C71.905 26.8001 71.7204 26.188 71.6232 25.5176H85.0305C85.05 25.401 85.0791 25.2067 85.0985 24.9347C85.118 24.6627 85.1374 24.3421 85.1374 23.9729C85.1374 22.3115 84.7973 20.7959 84.1173 19.426C83.4372 18.0562 82.4462 16.968 81.1346 16.1422L81.1443 16.1616ZM71.8078 22.2629C71.9049 21.9326 72.0118 21.6217 72.1576 21.3303C72.5753 20.5045 73.1582 19.8535 73.8966 19.3872C74.635 18.9208 75.4414 18.6877 76.3352 18.6877C77.229 18.6877 77.6176 18.7945 78.1423 19.018C78.6669 19.2414 79.1138 19.5232 79.4927 19.8729C79.8619 20.2227 80.1631 20.6113 80.3671 21.0291C80.5711 21.4469 80.6974 21.8549 80.7169 22.2532H71.8078V22.2629Z\"/><path class=\"lw\" d=\"M95.2998 27.143H95.018L90.4906 15.5039H85.2734L92.8418 33.39H97.408L105.054 15.5039H99.8952L95.2998 27.143Z\"/><path class=\"lw\" d=\"M107.305 33.3879H112.036V23.3518H122.101V18.8633H112.036V12.762H123.228V8.27344H107.305V33.3879Z\"/><path class=\"lw\" d=\"M138.64 16.1616C137.329 15.3455 135.716 14.9375 133.802 14.9375C131.888 14.9375 130.45 15.3747 129.071 16.2491C127.691 17.1235 126.603 18.2893 125.806 19.7369C125.01 21.1845 124.611 22.7682 124.611 24.4684C124.611 26.1686 125.019 27.9173 125.826 29.3455C126.632 30.7737 127.74 31.891 129.158 32.7168C130.577 33.5329 132.18 33.9409 133.977 33.9409C135.774 33.9409 137.64 33.5134 138.99 32.6585C140.35 31.8035 141.448 30.6377 142.284 29.1706L138.563 27.3441C138.145 28.0728 137.552 28.6751 136.804 29.1512C136.056 29.6273 135.133 29.8701 134.035 29.8701C132.937 29.8701 132.248 29.6564 131.49 29.2192C130.732 28.782 130.13 28.1602 129.683 27.3247C129.401 26.8001 129.216 26.188 129.119 25.5176H142.527C142.546 25.401 142.575 25.2067 142.595 24.9347C142.614 24.6627 142.633 24.3421 142.633 23.9729C142.633 22.3115 142.293 20.7959 141.613 19.426C140.933 18.0562 139.942 16.968 138.631 16.1422L138.64 16.1616ZM129.314 22.2629C129.411 21.9326 129.518 21.6217 129.663 21.3303C130.081 20.5045 130.664 19.8535 131.402 19.3872C132.141 18.9208 132.947 18.6877 133.841 18.6877C134.735 18.6877 135.123 18.7945 135.648 19.018C136.173 19.2414 136.62 19.5232 136.999 19.8729C137.368 20.2227 137.669 20.6113 137.873 21.0291C138.087 21.4469 138.203 21.8549 138.223 22.2532H129.314V22.2629Z\"/><path class=\"lw\" d=\"M154.49 22.7215L151.857 22.09C151.206 21.9248 150.642 21.6819 150.176 21.3516C149.71 21.0213 149.477 20.6424 149.477 20.1955C149.477 19.7485 149.71 19.4085 150.176 19.1073C150.642 18.8062 151.274 18.6507 152.071 18.6507C152.867 18.6507 153.382 18.7867 153.985 19.0685C154.577 19.3502 155.063 19.836 155.442 20.5452L159.367 18.8256C158.949 17.9415 158.386 17.2031 157.686 16.6299C156.987 16.0567 156.151 15.6292 155.199 15.3475C154.237 15.0657 153.168 14.9297 151.973 14.9297C150.778 14.9297 149.515 15.1531 148.447 15.6001C147.378 16.047 146.543 16.6688 145.921 17.4557C145.299 18.2524 144.988 19.1851 144.988 20.2635C144.988 21.3419 145.231 22.0705 145.707 22.8089C146.183 23.5473 146.815 24.1496 147.582 24.6354C148.35 25.1115 149.175 25.4515 150.04 25.6361L152.148 26.0927C152.644 26.1899 153.12 26.3065 153.586 26.4619C154.053 26.6174 154.441 26.8214 154.762 27.0934C155.073 27.3655 155.238 27.7346 155.238 28.201C155.238 28.6673 154.937 29.3086 154.325 29.5514C153.713 29.7943 153.042 29.9206 152.294 29.9206C151.546 29.9206 150.584 29.7069 149.904 29.2697C149.224 28.8325 148.69 28.201 148.291 27.3557L144.191 29.1434C144.522 30.0081 145.017 30.8047 145.697 31.5237C146.377 32.2523 147.261 32.8353 148.35 33.2822C149.438 33.7291 150.749 33.9525 152.294 33.9525C153.839 33.9525 154.976 33.7096 156.122 33.2336C157.268 32.7575 158.182 32.0775 158.862 31.2031C159.542 30.3287 159.882 29.2988 159.882 28.133C159.882 26.9671 159.435 25.7041 158.531 24.7617C157.628 23.829 156.297 23.149 154.519 22.7312L154.49 22.7215Z\"/><path class=\"lw\" d=\"M172.222 29.2039C171.892 29.3108 171.542 29.3594 171.173 29.3594C170.377 29.3594 169.803 29.1554 169.454 28.7473C169.104 28.3393 168.929 27.698 168.929 26.8334V19.4302H173.311V15.5052H168.929V10.4531H164.334V15.5052H161.215V19.4302H164.334V27.6689C164.334 29.544 164.858 31.011 165.907 32.07C166.957 33.1387 168.414 33.6633 170.26 33.6633C172.106 33.6633 171.367 33.6148 171.892 33.5079C172.417 33.401 172.941 33.2553 173.456 33.0707V28.5822C172.961 28.8833 172.553 29.0874 172.232 29.1942L172.222 29.2039Z\"/><path class=\"lw ls\" d=\"M153.216 40.9229H63.8342C55.8827 40.9229 49.4368 47.3688 49.4368 55.3203V55.3204C49.4368 63.2718 55.8827 69.7178 63.8342 69.7178H153.216C161.168 69.7178 167.614 63.2718 167.614 55.3204V55.3203C167.614 47.3688 161.168 40.9229 153.216 40.9229Z\" stroke-linejoin=\"round\" stroke-width=\"1.64685\"/><path class=\"ly ls\" d=\"M153.476 41.3232H129.597C121.639 41.3232 115.187 47.7748 115.187 55.7331V55.7332C115.187 63.6916 121.639 70.1431 129.597 70.1431H153.476C161.435 70.1431 167.886 63.6916 167.886 55.7332V55.7331C167.886 47.7748 161.435 41.3232 153.476 41.3232Z\" stroke-linejoin=\"round\" stroke-width=\"1.64685\"/><path class=\"lt\" d=\"M125.011 60.2759C125.309 59.9783 125.899 59.3831 126.782 58.4903C127.666 57.5879 128.28 56.9495 128.626 56.5751C129.115 56.0471 129.446 55.6343 129.619 55.3367C129.792 55.0391 129.878 54.6791 129.878 54.2567C129.878 53.9687 129.802 53.6999 129.648 53.4503C129.504 53.1911 129.288 52.9847 129 52.8311C128.722 52.6679 128.386 52.5863 127.992 52.5863C127.474 52.5863 127.056 52.7399 126.739 53.0471C126.432 53.3447 126.23 53.6711 126.134 54.0263L125.011 53.5799C125.107 53.2727 125.28 52.9559 125.53 52.6295C125.779 52.2935 126.115 52.0103 126.538 51.7799C126.96 51.5399 127.459 51.4199 128.035 51.4199C128.64 51.4199 129.173 51.5495 129.634 51.8087C130.104 52.0679 130.469 52.4135 130.728 52.8455C130.987 53.2775 131.117 53.7431 131.117 54.2423C131.117 55.2503 130.589 56.2919 129.533 57.3671L126.581 60.3335H131.232V61.4999H125.011V60.2759ZM136.854 61.7303C136.076 61.7303 135.385 61.5047 134.78 61.0535C134.185 60.5927 133.724 59.9735 133.398 59.1959C133.081 58.4087 132.923 57.5351 132.923 56.5751C132.923 55.6151 133.081 54.7463 133.398 53.9687C133.724 53.1815 134.185 52.5623 134.78 52.1111C135.375 51.6503 136.067 51.4199 136.854 51.4199C137.641 51.4199 138.332 51.6503 138.927 52.1111C139.523 52.5623 139.979 53.1815 140.295 53.9687C140.622 54.7463 140.785 55.6151 140.785 56.5751C140.785 57.5351 140.622 58.4087 140.295 59.1959C139.979 59.9735 139.518 60.5927 138.913 61.0535C138.318 61.5047 137.631 61.7303 136.854 61.7303ZM136.854 60.5639C137.401 60.5639 137.876 60.3911 138.279 60.0455C138.683 59.6903 138.995 59.2103 139.215 58.6055C139.436 58.0007 139.547 57.3239 139.547 56.5751C139.547 55.8263 139.436 55.1495 139.215 54.5447C138.995 53.9399 138.683 53.4647 138.279 53.1191C137.876 52.7639 137.401 52.5863 136.854 52.5863C136.307 52.5863 135.831 52.7639 135.428 53.1191C135.025 53.4647 134.713 53.9399 134.492 54.5447C134.271 55.1495 134.161 55.8263 134.161 56.5751C134.161 57.3239 134.271 58.0007 134.492 58.6055C134.713 59.2103 135.025 59.6903 135.428 60.0455C135.831 60.3911 136.307 60.5639 136.854 60.5639ZM142.294 60.2759C142.591 59.9783 143.182 59.3831 144.065 58.4903C144.948 57.5879 145.562 56.9495 145.908 56.5751C146.398 56.0471 146.729 55.6343 146.902 55.3367C147.074 55.0391 147.161 54.6791 147.161 54.2567C147.161 53.9687 147.084 53.6999 146.93 53.4503C146.786 53.1911 146.57 52.9847 146.282 52.8311C146.004 52.6679 145.668 52.5863 145.274 52.5863C144.756 52.5863 144.338 52.7399 144.022 53.0471C143.714 53.3447 143.513 53.6711 143.417 54.0263L142.294 53.5799C142.39 53.2727 142.562 52.9559 142.812 52.6295C143.062 52.2935 143.398 52.0103 143.82 51.7799C144.242 51.5399 144.742 51.4199 145.318 51.4199C145.922 51.4199 146.455 51.5495 146.916 51.8087C147.386 52.0679 147.751 52.4135 148.01 52.8455C148.27 53.2775 148.399 53.7431 148.399 54.2423C148.399 55.2503 147.871 56.2919 146.815 57.3671L143.863 60.3335H148.514V61.4999H142.294V60.2759ZM153.517 61.7303C152.864 61.7303 152.278 61.5719 151.76 61.2551C151.251 60.9383 150.853 60.5303 150.565 60.0311C150.286 59.5223 150.147 58.9895 150.147 58.4327C150.147 57.9047 150.253 57.4007 150.464 56.9207C150.685 56.4311 150.997 55.8887 151.4 55.2935L153.978 51.4199L154.957 52.0967L152.48 55.5671L152.509 55.5959C152.835 55.3655 153.258 55.2503 153.776 55.2503C154.275 55.2503 154.765 55.3895 155.245 55.6679C155.725 55.9463 156.114 56.3303 156.411 56.8199C156.718 57.2999 156.872 57.8375 156.872 58.4327C156.872 59.0087 156.718 59.5511 156.411 60.0599C156.104 60.5591 155.691 60.9623 155.173 61.2695C154.664 61.5767 154.112 61.7303 153.517 61.7303ZM153.517 60.5639C153.901 60.5639 154.256 60.4727 154.582 60.2903C154.909 60.0983 155.168 59.8439 155.36 59.5271C155.552 59.2007 155.648 58.8407 155.648 58.4471C155.648 58.0631 155.552 57.7127 155.36 57.3959C155.168 57.0695 154.909 56.8151 154.582 56.6327C154.256 56.4407 153.901 56.3447 153.517 56.3447C153.133 56.3447 152.773 56.4407 152.437 56.6327C152.11 56.8151 151.851 57.0695 151.659 57.3959C151.467 57.7127 151.371 58.0631 151.371 58.4471C151.371 58.8407 151.467 59.2007 151.659 59.5271C151.851 59.8439 152.11 60.0983 152.437 60.2903C152.773 60.4727 153.133 60.5639 153.517 60.5639Z\"/><path class=\"ld\" d=\"M62.7073 49.4788H64.4823L70.6095 59.2072H70.6777L70.6095 56.8519V49.4788H72.0602V61.699H70.5583L64.1409 51.5098H64.0727L64.1409 53.8651V61.699H62.7073V49.4788ZM78.8531 61.9721C77.9998 61.9721 77.2317 61.7673 76.549 61.3577C75.8663 60.9481 75.3316 60.3905 74.9447 59.6851C74.5692 58.9796 74.3815 58.2002 74.3815 57.3468C74.3815 56.4935 74.5692 55.7141 74.9447 55.0086C75.3316 54.3032 75.8663 53.7456 76.549 53.336C77.2317 52.9264 77.9998 52.7216 78.8531 52.7216C79.7065 52.7216 80.4745 52.9264 81.1572 53.336C81.8399 53.7456 82.369 54.3032 82.7445 55.0086C83.1314 55.7141 83.3248 56.4935 83.3248 57.3468C83.3248 58.2002 83.1314 58.9796 82.7445 59.6851C82.369 60.3905 81.8399 60.9481 81.1572 61.3577C80.4745 61.7673 79.7065 61.9721 78.8531 61.9721ZM78.8531 60.6579C79.3879 60.6579 79.8829 60.5271 80.338 60.2654C80.8045 59.9923 81.1743 59.6054 81.4474 59.1048C81.7318 58.6041 81.8741 58.0182 81.8741 57.3468C81.8741 56.6755 81.7318 56.0895 81.4474 55.5889C81.1743 55.0883 80.8045 54.7071 80.338 54.4454C79.8829 54.1723 79.3879 54.0358 78.8531 54.0358C78.3184 54.0358 77.8177 54.1723 77.3512 54.4454C76.8847 54.7071 76.5092 55.0883 76.2248 55.5889C75.9517 56.0895 75.8151 56.6755 75.8151 57.3468C75.8151 58.0182 75.9517 58.6041 76.2248 59.1048C76.5092 59.6054 76.8847 59.9923 77.3512 60.2654C77.8177 60.5271 78.3184 60.6579 78.8531 60.6579ZM86.0374 51.3903C85.753 51.3903 85.5083 51.2879 85.3035 51.0831C85.0987 50.8783 84.9963 50.6337 84.9963 50.3492C84.9963 50.0648 85.0987 49.8258 85.3035 49.6324C85.5083 49.4276 85.753 49.3252 86.0374 49.3252C86.3219 49.3252 86.5665 49.4276 86.7713 49.6324C86.9761 49.8258 87.0785 50.0648 87.0785 50.3492C87.0785 50.6337 86.9761 50.8783 86.7713 51.0831C86.5779 51.2879 86.3333 51.3903 86.0374 51.3903ZM85.3206 52.9947H86.7543V61.699H85.3206V52.9947ZM92.9788 61.9721C92.2051 61.9721 91.4996 61.773 90.8624 61.3747C90.2366 60.9765 89.7417 60.4303 89.3776 59.7363C89.0135 59.0308 88.8314 58.2343 88.8314 57.3468C88.8314 56.4707 89.0135 55.6799 89.3776 54.9745C89.7417 54.269 90.2366 53.7172 90.8624 53.3189C91.4996 52.9207 92.2051 52.7216 92.9788 52.7216C93.6501 52.7216 94.2474 52.8752 94.7708 53.1824C95.2942 53.4782 95.6925 53.848 95.9656 54.2918H96.0338L95.9656 53.08V49.4788H97.4163V61.699H96.0338V60.419H95.9656C95.6925 60.8513 95.2942 61.2211 94.7708 61.5283C94.2474 61.8242 93.6501 61.9721 92.9788 61.9721ZM93.1494 60.6579C93.6615 60.6579 94.1337 60.5214 94.566 60.2483C95.0098 59.9752 95.3625 59.5884 95.6242 59.0877C95.8973 58.5871 96.0338 58.0068 96.0338 57.3468C96.0338 56.6869 95.8973 56.1066 95.6242 55.606C95.3625 55.1053 95.0098 54.7185 94.566 54.4454C94.1337 54.1723 93.6615 54.0358 93.1494 54.0358C92.6488 54.0358 92.1766 54.1723 91.7329 54.4454C91.2891 54.7185 90.9307 55.111 90.6576 55.623C90.3959 56.1237 90.2651 56.6983 90.2651 57.3468C90.2651 57.9954 90.3959 58.5757 90.6576 59.0877C90.9307 59.5884 91.2891 59.9752 91.7329 60.2483C92.1766 60.5214 92.6488 60.6579 93.1494 60.6579ZM102.599 61.9721C101.962 61.9721 101.393 61.8469 100.892 61.5966C100.392 61.3463 100.005 61.0049 99.732 60.5726C99.4589 60.1288 99.3224 59.6282 99.3224 59.0706C99.3224 58.149 99.6694 57.4322 100.363 56.9202C101.057 56.3968 101.934 56.1351 102.992 56.1351C103.515 56.1351 103.999 56.192 104.442 56.3057C104.898 56.4195 105.245 56.5504 105.484 56.6983V56.1692C105.484 55.5206 105.256 55.0029 104.801 54.6161C104.346 54.2178 103.771 54.0187 103.077 54.0187C102.588 54.0187 102.138 54.1268 101.729 54.343C101.319 54.5478 100.995 54.8379 100.756 55.2134L99.6637 54.3942C100.005 53.8708 100.471 53.4612 101.063 53.1653C101.666 52.8695 102.332 52.7216 103.06 52.7216C104.243 52.7216 105.171 53.0345 105.842 53.6603C106.525 54.2747 106.866 55.1167 106.866 56.1863V61.699H105.484V60.4531H105.415C105.165 60.8741 104.79 61.2325 104.289 61.5283C103.788 61.8242 103.225 61.9721 102.599 61.9721ZM102.736 60.692C103.225 60.692 103.68 60.5669 104.101 60.3166C104.522 60.0662 104.858 59.7306 105.108 59.3096C105.358 58.8886 105.484 58.4278 105.484 57.9271C105.21 57.7451 104.875 57.5972 104.477 57.4834C104.078 57.3696 103.657 57.3127 103.214 57.3127C102.417 57.3127 101.814 57.4777 101.404 57.8077C101.006 58.1376 100.807 58.5643 100.807 59.0877C100.807 59.5656 100.989 59.9525 101.353 60.2483C101.717 60.5441 102.178 60.692 102.736 60.692Z\"/></svg>";</script>
 </head>
 <body>
 
-<div id="stage" data-theme="deep" role="region" aria-roledescription="presentation" aria-label="Exploration with AI">
+<div id="stage" data-theme="deep" role="region" aria-roledescription="presentation" aria-label="Welcome to the AI Playground">
   <div id="slot"></div>
   <div id="toast" aria-live="polite"></div>
+  <div id="timer" aria-live="off"></div>
   <div id="ui">
     <button id="prev" type="button" aria-label="Previous slide" tabindex="-1">‹</button>
     <span id="count" aria-live="off">01 / 12</span>
@@ -314,12 +370,13 @@ body.portrait #ui{right:24px;bottom:26px}
    SLIDE COPY — edit text here.
    Fields: kicker, headline, sub, list[], example, prompt, bigList[], foot
    Headlines render in ALL CAPS and size themselves to fit.
+   Wrap a word in *stars* to highlight it (e.g. "Welcome to the *AI* Playground").
    (optional: exampleLabel — defaults to "For example";  qr: true — shows the LinkedIn QR code on that slide)
    ═══════════════════════════════════════════════ */
 const slides = [
   {
-    kicker: "Google DevFest 2026 · Workshop",
-    headline: "Exploration with AI",
+    kicker: "Google Developer Groups Noida · DevFest 2026 · Workshop",
+    headline: "Welcome to the *AI* Playground",
     sub: "I'm a designer who can't really code — and I still built real apps. Today, so will you.",
     foot: "Neelesh Chaudhary — neelesh.one",
   },
@@ -408,13 +465,26 @@ const look = ["deep", "deep", "paper", "deep", "deep", "paper", "deep", "paper",
 /* Intro title sequence (~8s). Any key or click skips it. */
 const loader = {
   flashes: ["IDEAS.", "CODE?", "NOPE.", "…AI."],
-  title: ["EXPLORATION", "WITH", "AI"],
-  kicker: "Google DevFest 2026 · Workshop",
+  title: ["WELCOME TO THE", "AI", "PLAYGROUND"],
+  accent: 1,                                   /* which title word gets the highlight block (0 = first) */
+  kicker: "Google Developer Groups Noida · DevFest 2026 · Workshop",
   promise: "A designer who can't really code — building real apps anyway.",
   presenter: "Neelesh Chaudhary · neelesh.one",
   end: "LET'S BUILD.",
-  ticker: "LOADING YOUR SESSION — EXPLORATION WITH AI — BUILD SOMETHING REAL — ",
+  ticker: "LOADING YOUR SESSION — WELCOME TO THE AI PLAYGROUND — BUILD SOMETHING REAL — ",
 };
+
+/* Idea Roulette (press I): "<make> <who> <vibe>" — add or change items freely. */
+const ideas = {
+  make: ["A website", "A game", "A timer", "A quiz", "A poster maker", "A tip calculator", "A habit tracker", "A recipe page"],
+  who:  ["for a coffee shop", "for your favourite band", "for a school club", "for your dog", "for a street food stall", "for a wedding", "for a rainy day", "for your best friend"],
+  vibe: ["that feels calm.", "that's a little silly.", "in bold colours.", "that works on your phone.", "that your grandma could use.", "with one big button."],
+};
+
+/* Presenter settings. Keys while presenting:
+   ← → Space next/back · Home End · F fullscreen · C copy prompt · I idea roulette
+   T build timer (start/pause) · Shift+T hide · R reset · [ ] −/+ 1 min · ? help */
+const settings = { timerMinutes: 10 };
 
 /* ═══════════════════════════════════════════════
    ENGINE — no need to touch below this line.
@@ -444,10 +514,42 @@ const loader = {
     return n;
   };
 
+  /* text decode: letters scramble, then resolve left → right */
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+/<>?';
+  const decoders = []; let decRaf = 0;
+  const scramble = (final, p) => {
+    let out = '';
+    for (let i = 0; i < final.length; i++) {
+      const c = final[i];
+      if (!/[A-Za-z0-9]/.test(c)) { out += c; continue; }
+      out += p >= 0.18 + 0.82 * (i / final.length) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+    }
+    return out;
+  };
+  function decode(node, text, dur, delay = 0) {
+    const final = typo(text);
+    if (reduced.matches) { node.textContent = final; return; }
+    if (delay > 0) node.textContent = scramble(final, 0);
+    decoders.push({ node, final, dur, t0: performance.now() + delay, last: 0 });
+    if (!decRaf) decRaf = requestAnimationFrame(decLoop);
+  }
+  function decLoop(now) {
+    for (let k = decoders.length - 1; k >= 0; k--) {
+      const d = decoders[k];
+      if (now < d.t0) continue;
+      const p = (now - d.t0) / d.dur;
+      if (p >= 1) { d.node.textContent = d.final; decoders.splice(k, 1); continue; }
+      if (now - d.last < 42) continue;
+      d.last = now;
+      d.node.textContent = scramble(d.final, p);
+    }
+    decRaf = decoders.length ? requestAnimationFrame(decLoop) : 0;
+  }
+
   /* split text into masked words; each gets a staggered delay (ms) */
   function addWords(parent, text, ctx) {
     const toks = typo(text).split(' ').filter(Boolean);
-    const per = Math.min(ctx.max || 46, 520 / Math.max(1, toks.length));
+    const per = Math.min(ctx.max || 46, (ctx.span || 520) / Math.max(1, toks.length));
     toks.forEach((tok, i) => {
       const w = document.createElement('span'); w.className = 'w';
       const wi = document.createElement('span'); wi.className = 'wi';
@@ -477,6 +579,17 @@ const loader = {
   /* "A. B. C." → sentences; the last one gets the accent colour.
      One-sentence headlines stay plain — except the title, where the last word pops. */
   function fillHeadline(h, text, kind, ctx) {
+    if (text.includes('*')) {                       /* explicit emphasis: *word* */
+      const segs = text.split(/(\*[^*]+\*)/).filter((t) => t.trim());
+      segs.forEach((seg, i) => {
+        if (seg[0] === '*') {
+          const sp = el('span', 'hl'); sp.style.setProperty('--hd', Math.round(ctx.t));
+          addWords(sp, seg.slice(1, -1), ctx); h.append(sp);
+        } else addWords(h, seg.trim(), ctx);
+        if (i < segs.length - 1) h.append(document.createTextNode(' '));
+      });
+      return;
+    }
     const m = text.match(/^(.*[.?!])\s+([^.?!]*[.?!]?)$/);
     if (!m) {
       if (kind === 'title') {
@@ -491,7 +604,10 @@ const loader = {
     parts.push(m[2].trim());
     parts.forEach((p, i) => {
       const sp = el('span', 's' + (i === parts.length - 1 ? ' hl' : ''));
-      if (i === parts.length - 1) sp.style.setProperty('--hd', Math.round(ctx.t));
+      if (i === parts.length - 1) {
+        sp.style.setProperty('--hd', Math.round(ctx.t));
+        if (portrait && parts.length > 1) h.append(document.createElement('br'));   /* narrow screens: the highlight starts a fresh line */
+      }
       addWords(sp, p, ctx);
       h.append(sp);
       if (i < parts.length - 1) h.append(document.createTextNode(' '));
@@ -507,9 +623,9 @@ const loader = {
   };
   /* rectangles [x0,y0,x1,y1] where small text lives; the texture fades out around them */
   const textZones = () => portrait
-    ? [[48, 36, 700, 104], [48, 1110, 690, 1250], [500, 1196, 720, 1280]]
-    : [[80, 36, 780, 96], [80, 616, 980, 700], [1030, 640, 1250, 710]];
-  const LOADER_ZONES = [[80, 28, 420, 76], [80, 456, 1200, 650], [0, 668, 1280, 720]];
+    ? [[48, 36, 700, 104], [48, 1110, 690, 1250], [500, 1196, 720, 1280], [520, 24, 700, 100]]
+    : [[80, 36, 780, 96], [80, 616, 980, 700], [1030, 640, 1250, 710], [1030, 24, 1250, 104]];
+  const LOADER_ZONES = [[80, 28, 420, 76], [80, 456, 1200, 650], [0, 668, 1280, 720], [1030, 24, 1250, 104]];
   const rng = (a) => () => {
     a |= 0; a = a + 0x6D2B79F5 | 0;
     let t = Math.imul(a ^ a >>> 15, 1 | a);
@@ -602,6 +718,13 @@ const loader = {
     return t;
   }
 
+  /* the DevFest logo, recoloured by the theme (see .logo in the CSS) */
+  function logoNode() {
+    const t = document.createElement('div');
+    t.innerHTML = window.LOGO || '';
+    return t.firstElementChild || document.createComment('');
+  }
+
   function build(s, idx) {
     const kind = idx === 0 ? 'title' : s.prompt ? 'prompt' : s.bigList ? 'big' : 'std';
     const root = el('section', 'slide');
@@ -658,8 +781,13 @@ const loader = {
 
     if (s.prompt) {
       const b = el('blockquote', 'prompt'), p = el('p');
-      ctx.max = 14; addWords(p, s.prompt, ctx);
-      b.append(p); stack.append(b);
+      ctx.max = 40; ctx.span = 1500; addWords(p, s.prompt, ctx); ctx.span = 0;
+      const lastD = Math.round(ctx.t - 90);
+      const qe = el('span', 'qe', '\u201D'); qe.style.setProperty('--d', lastD);
+      const caret = el('span', 'caret', '_'); caret.style.setProperty('--d', lastD + 260);
+      p.append(qe, caret);
+      const hint = el('span', 'copyhint', matchMedia('(pointer: coarse)').matches ? 'Tap to copy' : 'Press C to copy');
+      b.append(p, hint); stack.append(b);
     }
     if (s.bigList) {
       const ul = el('ul', 'biglist');
@@ -673,10 +801,12 @@ const loader = {
     }
     if (s.foot) { const f = el('p', 'foot'); ctx.max = 14; addWords(f, s.foot, ctx); wrap.append(f); }
     if (s.qr && window.QR) { root.dataset.qr = '1'; wrap.append(qrTile()); }
+    wrap.append(logoNode());
     /* long copy: keep the whole reveal under ~0.9s */
     const wis = root.querySelectorAll('.wi');
     let mx = 0; wis.forEach((w) => { mx = Math.max(mx, +w.style.getPropertyValue('--d')); });
-    if (mx > 900) wis.forEach((w) => w.style.setProperty('--d', Math.round(+w.style.getPropertyValue('--d') * 900 / mx)));
+    const cap = s.prompt ? 3200 : 900;
+    if (mx > cap) wis.forEach((w) => w.style.setProperty('--d', Math.round(+w.style.getPropertyValue('--d') * cap / mx)));
     paintTexture(tex, look[idx] || 'deep', idx, ...dims(), textZones());
     return root;
   }
@@ -732,6 +862,7 @@ const loader = {
     const next = build(slides[i], i);
     slot.append(next);
     fitSlide(next);
+    next.querySelectorAll('.hl .wi').forEach((wi) => decode(wi, wi.textContent, 620, (+wi.style.getPropertyValue('--d') || 0) + 140));
 
     cur = i;
     stage.dataset.theme = look[i] || 'deep';
@@ -739,7 +870,7 @@ const loader = {
     fill.style.transform = 'scaleX(' + (total > 1 ? i / (total - 1) : 1) + ')';
     prevBtn.disabled = i === 0;
     nextBtn.disabled = i === total - 1;
-    document.title = (slides[i].headline || slides[i].kicker || 'Exploration with AI') + ' — DevFest 2026';
+    document.title = (slides[i].headline || slides[i].kicker || 'Welcome to the AI Playground').replace(/\*/g, '') + ' — DevFest 2026';
 
     const h = '#' + (i + 1);
     if (location.hash !== h) {
@@ -801,11 +932,96 @@ const loader = {
     } else legacy();
   }
 
+  /* ═════════ OVERLAYS: idea roulette (I) · shortcut help (?) ═════════ */
+  const ov = document.createElement('div');
+  ov.className = 'ov'; ov.setAttribute('role', 'dialog');
+  stage.append(ov);
+  let ovKind = null, ovBig = null, ovBox = null;
+  const pick = (a) => a[(Math.random() * a.length) | 0];
+
+  function fitBig(big, box, lo = 34, hi = 112) {
+    for (let n = 0; n < 9; n++) {
+      const mid = (lo + hi) / 2;
+      big.style.fontSize = mid + 'px';
+      if (big.scrollHeight > box.clientHeight || big.scrollWidth > box.clientWidth + 2) hi = mid; else lo = mid;
+    }
+    big.style.fontSize = lo + 'px';
+  }
+  function openOv(kind) {
+    ov.textContent = '';
+    const theme = look[cur] === 'deep' ? 'paper' : 'deep';        /* opposite colour = a clear change of scene */
+    ov.dataset.theme = theme;
+    const tex = document.createElement('canvas'); tex.className = 'tex'; ov.append(tex);
+    const w = el('div', 'ovw'); ov.append(w);
+    ovKind = kind;
+    ov.classList.add('on');
+    if (kind === 'idea') {
+      const m = el('div', 'ovmain'); ovBig = el('div', 'ovbig'); ovBox = m; m.append(ovBig);
+      w.append(el('p', 'ovk', 'Idea roulette'), m, el('p', 'ovfoot', 'Press I to spin again · any other key to close'));
+      spinIdea();
+    } else {
+      const ul = el('ul', 'helpl');
+      [['← → Space', 'Next / back'], ['Home End', 'First / last slide'], ['F', 'Fullscreen'], ['C', 'Copy the prompt on screen'],
+       ['I', 'Idea roulette'], ['T', 'Build timer: start / pause'], ['Shift T', 'Hide the timer'], ['R', 'Reset the timer'], ['[ ]', 'Timer − / + 1 minute']]
+        .forEach(([k, d]) => { const li = el('li'); li.append(el('span', 'k', k), el('span', 'd', d)); ul.append(li); });
+      const m = el('div', 'ovmain'); m.append(ul);
+      w.append(el('p', 'ovk', 'Shortcuts'), m, el('p', 'ovfoot', 'Any key to close'));
+    }
+    paintTexture(tex, theme, 11, ...dims(), textZones());
+  }
+  function spinIdea() {
+    const text = pick(ideas.make) + ' ' + pick(ideas.who) + ' ' + pick(ideas.vibe);
+    ovBig.textContent = typo(text);
+    fitBig(ovBig, ovBox);
+    decode(ovBig, text, 900);
+  }
+  function closeOv() { ov.classList.remove('on'); ovKind = null; }
+  ov.addEventListener('click', closeOv);
+
+  /* build timer: a countdown chip, for the hands-on part */
+  const timerEl = $('#timer');
+  let tmLeft = settings.timerMinutes * 60000, tmEnd = 0, tmRun = false, tmShown = false, tmInt = 0;
+  const tmRemaining = () => (tmRun ? Math.max(0, tmEnd - Date.now()) : tmLeft);
+  function tmRender() {
+    const ms = tmRemaining();
+    if (tmRun && ms <= 0) { tmRun = false; tmLeft = 0; }
+    const sec = Math.ceil(ms / 1000);
+    timerEl.textContent = ms <= 0 ? "TIME'S UP" : pad(Math.floor(sec / 60)) + ':' + pad(sec % 60);
+  }
+  function tmShow() {
+    tmShown = true; timerEl.classList.add('on');
+    clearInterval(tmInt); tmInt = setInterval(tmRender, 250); tmRender();
+  }
+  function timerToggle() {
+    if (!tmShown) tmShow();
+    if (tmRun) { tmLeft = tmRemaining(); tmRun = false; }
+    else { if (tmLeft <= 0) tmLeft = settings.timerMinutes * 60000; tmEnd = Date.now() + tmLeft; tmRun = true; }
+    tmRender();
+  }
+  function timerHide() { tmLeft = tmRemaining(); tmRun = false; tmShown = false; timerEl.classList.remove('on'); clearInterval(tmInt); }
+  function timerReset() { tmLeft = settings.timerMinutes * 60000; tmRun = false; tmShow(); }
+  function timerAdjust(d) {
+    if (!tmShown) tmShow();
+    const left = Math.min(99 * 60000, Math.max(0, tmRemaining() + d));
+    if (tmRun) tmEnd = Date.now() + left; else tmLeft = left;
+    tmRender();
+  }
+
+  /* keep the screen awake while presenting */
+  async function keepAwake() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) {} }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
+  keepAwake();
+
   /* ── keyboard ── */
   let skipLoader = () => {};
   addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (loading) { e.preventDefault(); skipLoader(); return; }
+    if (ovKind) {                                   /* an overlay is open: I spins again, anything else closes */
+      e.preventDefault();
+      if (ovKind === 'idea' && (e.key === 'i' || e.key === 'I')) spinIdea(); else closeOv();
+      return;
+    }
     switch (e.key) {
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case 'Enter': case 'n': case 'N':
         e.preventDefault(); next(); break;
@@ -817,8 +1033,17 @@ const loader = {
       case 'End': e.preventDefault(); go(total - 1); break;
       case 'f': case 'F': e.preventDefault(); toggleFS(); break;
       case 'c': case 'C': copyPrompt(); break;
+      case 'i': case 'I': openOv('idea'); break;
+      case 't': case 'T': e.shiftKey ? timerHide() : timerToggle(); break;
+      case 'r': case 'R': timerReset(); break;
+      case '[': timerAdjust(-60000); break;
+      case ']': timerAdjust(60000); break;
+      case '?': case 'h': case 'H': openOv('help'); break;
     }
   });
+
+  /* tap / click a prompt to copy it */
+  slot.addEventListener('click', (e) => { if (e.target.closest('.prompt')) copyPrompt(); });
 
   /* ── buttons ── */
   prevBtn.addEventListener('click', (e) => { prev(); e.currentTarget.blur(); });
@@ -873,15 +1098,13 @@ const loader = {
     flashAt: [150, 480, 810, 1140],       /* BEAT 1: four single-word flashes */
     flashLen: [220, 220, 220, 400],
     cut: 1620,                             /* BEAT 2: title block begins */
-    words: [1700, 2350, 3000],             /*   EXPLORATION · WITH · AI (accent hit) */
+    words: [1700, 2500, 3150],             /*   WELCOME TO THE · AI (accent hit) · PLAYGROUND */
     kicker: 4050,                          /* BEAT 3 */
     promise: 4550,
     presenter: 6200,                       /* BEAT 4 */
     end: 6800,
     wipe: 7700,
   };
-  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+/<>?';
-
   function runLoader(onStart) {
     const L = $('#loader');
     const stat = reduced.matches;
@@ -906,7 +1129,7 @@ const loader = {
     const title = el('div', 'ldbig'); title.id = 'ldtitle';
     const ln1 = el('div'), ln2 = el('div');
     const tw = loader.title.map((w, i) => {
-      const s = el('span', 'tw' + (i === loader.title.length - 1 ? ' hl' : ''), w);
+      const s = el('span', 'tw' + (i === loader.accent ? ' hl' : ''), w);
       return s;
     });
     ln1.append(tw[0]); tw.slice(1).forEach((s) => ln2.append(s));
@@ -925,7 +1148,7 @@ const loader = {
     for (let g = 0; g < 2; g++) track.append(el('span', 'tk', loader.ticker.repeat(4)));
     tick.append(track);
 
-    S.append(hud, flash, main, kick, prom, pres, tick);
+    S.append(hud, flash, main, kick, prom, pres, tick, logoNode());
     resize();
 
     /* fit a big word so its final text spans maxW (capped) */
@@ -933,29 +1156,6 @@ const loader = {
       box.style.fontSize = '100px';
       const w = probe.offsetWidth || 1;
       box.style.fontSize = Math.min(cap, (100 * maxW) / w) + 'px';
-    };
-
-    /* — decode: letters scramble, then resolve left → right — */
-    const decoders = [];
-    const decode = (node, text, dur) => {
-      const final = typo(text);
-      decoders.push({ node, final, dur, t0: performance.now(), last: 0 });
-    };
-    const stepDecoders = (now) => {
-      for (let k = decoders.length - 1; k >= 0; k--) {
-        const d = decoders[k], p = (now - d.t0) / d.dur;
-        if (p >= 1) { d.node.textContent = d.final; decoders.splice(k, 1); continue; }
-        if (now - d.last < 42) continue;
-        d.last = now;
-        const n = d.final.length;
-        let out = '';
-        for (let i = 0; i < n; i++) {
-          const c = d.final[i];
-          if (!/[A-Za-z0-9]/.test(c)) { out += c; continue; }
-          out += p >= 0.18 + 0.82 * (i / n) ? c : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-        }
-        d.node.textContent = out;
-      }
     };
 
     /* — timeline — */
@@ -973,16 +1173,16 @@ const loader = {
       at(TL.flashAt[i] + TL.flashLen[i], () => { flash.className = 'ldbig'; });
     });
 
-    at(TL.cut, () => { fit(title, tw[0], 1104, 150); fxOn(); });
+    at(TL.cut, () => { fit(title, title, 1104, 150); fxOn(); });
     at(TL.cut + 70, fxOff);
     loader.title.forEach((w, i) => {
       at(TL.words[i], () => {
         tw[i].classList.add('on', 'slam');
         decode(tw[i], w, i === 0 ? 380 : 220);
-        if (i === loader.title.length - 1) fxOn();
+        if (i === loader.accent) fxOn();
       });
     });
-    at(TL.words[loader.title.length - 1] + 70, fxOff);
+    at(TL.words[loader.accent] + 70, fxOff);
 
     at(TL.kicker, () => { kick.classList.add('on'); decode(kick, loader.kicker, 320); });
     at(TL.promise, () => { prom.classList.add('on'); decode(prom, loader.promise, 900); });
@@ -1018,7 +1218,7 @@ const loader = {
     if (stat) {
       const go_ = () => {
         tw.forEach((n) => { n.classList.add('on'); n.textContent = typo(n.textContent); });
-        fit(title, tw[0], 1104, 150);
+        fit(title, title, 1104, 150);
         kick.classList.add('on'); kick.textContent = typo(loader.kicker);
         prom.classList.add('on'); prom.textContent = typo(loader.promise);
         pres.classList.add('on');
@@ -1039,7 +1239,6 @@ const loader = {
       cnt.textContent = f >= 1 ? '100' : pad(Math.floor(f * 100));
       barf.style.transform = 'scaleX(' + f + ')';
       while (ev.length && ev[0].t <= t) ev.shift().fn();
-      stepDecoders(now);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

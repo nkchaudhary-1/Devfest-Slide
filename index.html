@@ -33,7 +33,8 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#2000B1;overflow:hidden}
+html,body{height:100%;background:#2000B1;overflow:hidden;overflow:clip}
+body{position:fixed;inset:0;width:100%}   /* the scaled stage must never widen the page on phones */
 body{font-family:var(--display);font-weight:500;color:#F2F3F4;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-kerning:normal}
 body.idle{cursor:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -322,6 +323,47 @@ body.portrait #timer{top:28px;right:206px;font-size:26px}
 body.portrait .ovw{padding:60px 56px 0}
 body.portrait .ovfoot{left:56px;bottom:58px}
 
+/* ───────── Pomodoro slide ───────── */
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+.slide{transition:background-color .5s ease}
+.tide{
+  position:absolute;inset:0;pointer-events:none;opacity:.3;--p:0;
+  background:radial-gradient(circle,var(--fg) 1.8px,transparent 2.5px) 0 0 / 9px 9px;
+  -webkit-mask-image:linear-gradient(to top,#000 calc(var(--p) * 100%),transparent calc(var(--p) * 100% + 18%));
+          mask-image:linear-gradient(to top,#000 calc(var(--p) * 100%),transparent calc(var(--p) * 100% + 18%));
+  transition:--p 1s linear;
+}
+.pomo{width:100%;display:flex;flex-direction:column;align-items:flex-start;animation:rise 700ms var(--expo) 200ms both}
+.pstat{font-family:var(--mono);font-weight:700;font-size:calc(22px * var(--k));line-height:1.2;letter-spacing:.08em;text-transform:uppercase;min-height:1.2em}
+.pdigits{
+  position:relative;display:inline-flex;margin-top:calc(6px * var(--k));padding:0 .2em 0 .14em;margin-left:-.14em;
+  font-family:var(--head);font-size:calc(var(--h) * var(--k));line-height:1.2;white-space:nowrap;cursor:text;
+}
+.pd,.pc{display:inline-block;overflow:hidden;text-align:center;padding:.06em 0 .12em}
+.pc{padding-left:.04em;padding-right:.04em}
+.pd i,.pc i{display:inline-block;font-style:normal}
+.pd.roll i{animation:up 620ms var(--expo) both}
+.pdigits.run .pc i{animation:colon 1s steps(1,end) infinite}
+.pdigits.tick{animation:tick 1s ease-in-out infinite}
+.pdigits.pop{animation:pop 900ms var(--expo) both}
+.pdigits.ed{
+  color:var(--hl-fg);border-radius:.05em;
+  background:linear-gradient(var(--hl-bg),var(--hl-bg)) 0 50% / calc(100% - .06em) 100% no-repeat;
+}
+.psize{font-family:var(--head);font-size:calc(var(--h) * var(--k));line-height:0;height:0;overflow:hidden;visibility:hidden;white-space:nowrap;padding:0 .2em 0 .14em}
+.pomoin{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;background:none;font-size:16px;cursor:text}
+.pctl{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:calc(22px * var(--k))}
+.pbtn{
+  font-family:var(--mono);font-weight:700;font-size:calc(19px * var(--k));line-height:1;letter-spacing:.08em;text-transform:uppercase;
+  padding:.7em 1.05em;border-radius:.45em;color:var(--fg);background:transparent;
+  box-shadow:inset 0 0 0 2px var(--fg);transition:background-color .2s,color .2s;
+}
+.pbtn:hover,.pbtn.on{background:var(--hl-bg);color:var(--hl-fg)}
+@keyframes colon{50%{opacity:.25}}
+@keyframes tick{50%{transform:scale(1.025)}}
+@keyframes pop{from{transform:scale(1.06)}}
+body.portrait .pctl{margin-top:26px}
+
 /* ───────── Reduced motion: plain fades, static loader ───────── */
 @media (prefers-reduced-motion:reduce){
   .slide{animation:fade 200ms linear both}
@@ -333,6 +375,10 @@ body.portrait .ovfoot{left:56px;bottom:58px}
   #ldticker .track{animation:none}
   .slam{animation:none}
   .hl{animation:none}
+  .pomo{animation:fade 200ms linear both}
+  .pd.roll i,.pdigits.run .pc i,.pdigits.tick,.pdigits.pop{animation:none}
+  .tide{transition:none}
+  .slide{transition:none}
   .prompt .wi,.prompt .qe{animation:none}
   .prompt .caret{display:none}
   .qr{animation:fade 200ms linear both}
@@ -357,7 +403,7 @@ body.portrait .ovfoot{left:56px;bottom:58px}
   <div id="timer" aria-live="off"></div>
   <div id="ui">
     <button id="prev" type="button" aria-label="Previous slide" tabindex="-1">‹</button>
-    <span id="count" aria-live="off">01 / 12</span>
+    <span id="count" aria-live="off"></span>
     <button id="next" type="button" aria-label="Next slide" tabindex="-1">›</button>
   </div>
   <div id="bar"><i id="fill"></i></div>
@@ -368,7 +414,7 @@ body.portrait .ovfoot{left:56px;bottom:58px}
 <script>
 /* ═══════════════════════════════════════════════
    SLIDE COPY — edit text here.
-   Fields: kicker, headline, sub, list[], example, prompt, bigList[], foot
+   Fields: kicker, headline, sub, list[], example, prompt, bigList[], foot, qr, pomodoro
    Headlines render in ALL CAPS and size themselves to fit.
    Wrap a word in *stars* to highlight it (e.g. "Welcome to the *AI* Playground").
    (optional: exampleLabel — defaults to "For example";  qr: true — shows the LinkedIn QR code on that slide)
@@ -446,6 +492,11 @@ const slides = [
     prompt: "Make me a focus timer — 25 minutes of work, then a 5-minute break, with start, pause and reset buttons. Keep it calm and simple with big numbers. Give me one file I can open in my browser.",
   },
   {
+    kicker: "Time to build",
+    pomodoro: true,
+    foot: "Type the minutes, then press Enter.",
+  },
+  {
     kicker: "If you remember three things",
     bigList: ["You can build it.", "Start small.", "It's free."],
   },
@@ -460,7 +511,7 @@ const slides = [
 
 /* Background per slide, in order: "deep" (Deep Sea Exploration blue) · "paper" (Anti-Flash White).
    The colours themselves live in the CSS at the top of the file. */
-const look = ["deep", "deep", "paper", "deep", "deep", "paper", "deep", "paper", "paper", "paper", "deep", "deep"];
+const look = ["deep", "deep", "paper", "deep", "deep", "paper", "deep", "paper", "paper", "paper", "deep", "paper", "deep"];
 
 /* Intro title sequence (~8s). Any key or click skips it. */
 const loader = {
@@ -483,8 +534,9 @@ const ideas = {
 
 /* Presenter settings. Keys while presenting:
    ← → Space next/back · Home End · F fullscreen · C copy prompt · I idea roulette
-   T build timer (start/pause) · Shift+T hide · R reset · [ ] −/+ 1 min · ? help */
-const settings = { timerMinutes: 10 };
+   T build timer (start/pause) · Shift+T hide · R reset · [ ] −/+ 1 min · ? help · M mute
+   On the Pomodoro slide: type minutes (e.g. 15 or 7:30) · Enter start/pause · B focus⇄break · R reset */
+const settings = { timerMinutes: 10, pomodoro: { focus: 25, break: 5 } };
 
 /* ═══════════════════════════════════════════════
    ENGINE — no need to touch below this line.
@@ -570,6 +622,7 @@ const settings = { timerMinutes: 10 };
   function headRangeBase(s, kind) {
     if (kind === 'title') return [90, 188];
     if (s.bigList) return [56, 150];
+    if (s.pomodoro) return [90, 260];
     if (s.qr) return [40, 104];
     if (s.prompt) return [48, 112];
     if (s.list || s.example) return [40, 104];
@@ -726,7 +779,7 @@ const settings = { timerMinutes: 10 };
   }
 
   function build(s, idx) {
-    const kind = idx === 0 ? 'title' : s.prompt ? 'prompt' : s.bigList ? 'big' : 'std';
+    const kind = idx === 0 ? 'title' : s.prompt ? 'prompt' : s.bigList ? 'big' : s.pomodoro ? 'pomodoro' : 'std';
     const root = el('section', 'slide');
     root.dataset.kind = kind;
     root.dataset.theme = look[idx] || 'deep';
@@ -734,6 +787,7 @@ const settings = { timerMinutes: 10 };
     root.style.setProperty('--h', hmax + 'px');
     root.dataset.hmin = hmin; root.dataset.hmax = hmax;
     const tex = document.createElement('canvas'); tex.className = 'tex'; root.append(tex);
+    if (s.pomodoro) root.append(el('div', 'tide'));
     const wrap = el('div', 'wrap');
     root.append(wrap);
 
@@ -779,6 +833,23 @@ const settings = { timerMinutes: 10 };
       if (s.example) stack.append(mkExample());
     }
 
+    if (s.pomodoro) {
+      const pm = el('div', 'pomo');
+      const dg = el('div', 'pdigits');
+      ['d', 'd', ':', 'd', 'd'].forEach((t) => {
+        const sl = el('span', t === ':' ? 'pc' : 'pd'), i = document.createElement('i');
+        i.textContent = t === ':' ? ':' : '0'; sl.append(i); dg.append(sl);     /* placeholder: the widest clock, so the fit leaves room */
+      });
+      const inp = document.createElement('input');
+      inp.className = 'pomoin'; inp.type = 'text'; inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('autocomplete', 'off');
+      inp.setAttribute('aria-label', 'Minutes'); dg.append(inp);
+      const ctl = el('div', 'pctl');
+      [['focus', 'Focus'], ['break', 'Break'], ['toggle', 'Start'], ['reset', 'Reset'], ['minus', '−1 min'], ['plus', '+1 min']].forEach(([a, t]) => {
+        const b = el('button', 'pbtn', t); b.type = 'button'; b.dataset.act = a; b.tabIndex = -1; ctl.append(b);
+      });
+      const sz = el('div', 'psize', '00:00'); sz.setAttribute('aria-hidden', 'true');   /* invisible: reserves room for the widest clock */
+      pm.append(el('p', 'pstat'), dg, sz, ctl); stack.append(pm);
+    }
     if (s.prompt) {
       const b = el('blockquote', 'prompt'), p = el('p');
       ctx.max = 40; ctx.span = 1500; addWords(p, s.prompt, ctx); ctx.span = 0;
@@ -814,10 +885,11 @@ const settings = { timerMinutes: 10 };
   /* responsive text: size the headline as large as the slide allows, then shrink everything else only if still needed */
   function fitSlide(root) {
     const main = root.querySelector('.main'), stack = root.querySelector('.stack');
-    const heads = root.querySelectorAll('.headline, .biglist li');
+    const heads = root.querySelectorAll('.headline, .biglist li, .pdigits');
     const over = () =>
       stack.offsetHeight > main.clientHeight + 1 ||
       stack.scrollWidth > main.clientWidth + 1 ||
+      [...root.querySelectorAll('.psize')].some((n) => n.offsetWidth > main.clientWidth + 1) ||
       [...heads].some((h) => h.scrollWidth > h.clientWidth + parseFloat(getComputedStyle(h).fontSize) * 0.1);
     root.style.setProperty('--k', 1);
     let lo = +root.dataset.hmin, hi = +root.dataset.hmax;
@@ -862,6 +934,7 @@ const settings = { timerMinutes: 10 };
     const next = build(slides[i], i);
     slot.append(next);
     fitSlide(next);
+    if (slides[i].pomodoro) { pomoTheme(); pomoPaint(next, false); }
     next.querySelectorAll('.hl .wi').forEach((wi) => decode(wi, wi.textContent, 620, (+wi.style.getPropertyValue('--d') || 0) + 140));
 
     cur = i;
@@ -882,6 +955,7 @@ const settings = { timerMinutes: 10 };
 
   /* ── scale the stage to any screen; hold it upright (720×1280) on portrait screens ── */
   function resize() {
+    if (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('pomoin')) return;   /* on-screen keyboard open: leave the layout alone */
     const wantPortrait = innerHeight > innerWidth;
     const changed = wantPortrait !== portrait || !stage.dataset.mode;
     portrait = wantPortrait;
@@ -962,7 +1036,7 @@ const settings = { timerMinutes: 10 };
     } else {
       const ul = el('ul', 'helpl');
       [['← → Space', 'Next / back'], ['Home End', 'First / last slide'], ['F', 'Fullscreen'], ['C', 'Copy the prompt on screen'],
-       ['I', 'Idea roulette'], ['T', 'Build timer: start / pause'], ['Shift T', 'Hide the timer'], ['R', 'Reset the timer'], ['[ ]', 'Timer − / + 1 minute']]
+       ['I', 'Idea roulette'], ['T', 'Build timer: start / pause'], ['Shift T', 'Hide the timer'], ['R', 'Reset the timer'], ['[ ]', 'Timer − / + 1 minute'], ['M', 'Mute the chime']]
         .forEach(([k, d]) => { const li = el('li'); li.append(el('span', 'k', k), el('span', 'd', d)); ul.append(li); });
       const m = el('div', 'ovmain'); m.append(ul);
       w.append(el('p', 'ovk', 'Shortcuts'), m, el('p', 'ovfoot', 'Any key to close'));
@@ -1007,6 +1081,150 @@ const settings = { timerMinutes: 10 };
     tmRender();
   }
 
+  /* ═════════ POMODORO (the slide marked pomodoro:true) ═════════ */
+  const pomo = { mode: 'focus', mins: { focus: settings.pomodoro.focus, break: settings.pomodoro.break }, state: 'idle', left: 0, total: 0, end: 0, buf: '', session: 1 };
+  pomo.left = pomo.total = pomo.mins.focus * 60000;
+  const pomoIdx = () => slides.findIndex((x) => x.pomodoro);
+  const pomoMs = () => (pomo.state === 'running' ? Math.max(0, pomo.end - Date.now()) : pomo.left);
+  const mmss = (ms) => { const t = Math.ceil(ms / 1000); return pad(Math.floor(t / 60)) + ':' + pad(t % 60); };
+  const bufMs = (b) => {                                   /* "15" → 15:00 · "7:30" → 7:30 · "7:3" → 7:30 */
+    const [m, sc] = b.split(':');
+    const mm = Math.min(99, parseInt(m || '0', 10) || 0), ss = sc ? Math.min(59, parseInt((sc + '0').slice(0, 2), 10) || 0) : 0;
+    return (mm * 60 + ss) * 1000;
+  };
+  const say = (t) => {
+    toast.textContent = t; toast.classList.add('show');
+    clearTimeout(say.t); say.t = setTimeout(() => toast.classList.remove('show'), 1800);
+  };
+
+  /* a soft three-note chime (WebAudio, no files); M mutes */
+  let muted = false, actx = null;
+  function chime() {
+    if (muted) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = actx.currentTime;
+      [[880, 0], [1318.5, .22], [1760, .44]].forEach(([f, d]) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t0 + d); g.gain.linearRampToValueAtTime(.07, t0 + d + .03); g.gain.exponentialRampToValueAtTime(.0001, t0 + d + .6);
+        o.connect(g); g.connect(actx.destination); o.start(t0 + d); o.stop(t0 + d + .65);
+      });
+    } catch (e) {}
+  }
+
+  function pomoPaint(root, anim) {
+    const ed = pomo.buf !== '', ms = pomoMs();
+    const txt = ed ? mmss(bufMs(pomo.buf)) : mmss(ms);
+    const slots = root.querySelectorAll('.pdigits > span');
+    [...txt].forEach((ch, i) => {
+      const sl = slots[i];
+      if (!sl || sl.dataset.v === ch) return;
+      sl.dataset.v = ch; sl.firstChild.textContent = ch;
+      if (anim && !reduced.matches && sl.classList.contains('pd')) { sl.classList.remove('roll'); void sl.offsetWidth; sl.classList.add('roll'); }
+    });
+    const dg = root.querySelector('.pdigits');
+    dg.classList.toggle('ed', ed);
+    dg.classList.toggle('run', pomo.state === 'running');
+    dg.classList.toggle('tick', pomo.state === 'running' && ms <= 10000);
+    const label = pomo.mode === 'focus' ? 'Focus' : 'Break', other = pomo.mode === 'focus' ? 'break' : 'focus';
+    const st = ed ? 'Set ' + label + ' time · Enter to start'
+      : pomo.state === 'idle' ? label + ' · type minutes, then Enter'
+      : pomo.state === 'running' ? label + ' · session ' + pomo.session
+      : pomo.state === 'paused' ? 'Paused · ' + label
+      : 'Time’s up · Enter for ' + other;
+    const sEl = root.querySelector('.pstat');
+    if (sEl.dataset.v !== st) { sEl.dataset.v = st; sEl.textContent = st; if (pomo.state === 'done' && anim) decode(sEl, st, 520); }
+    root.querySelectorAll('.pbtn').forEach((b) => {
+      const a = b.dataset.act;
+      if (a === 'focus' || a === 'break') b.classList.toggle('on', a === pomo.mode);
+      if (a === 'toggle') b.textContent = pomo.state === 'running' ? 'Pause' : pomo.state === 'done' ? 'Next' : 'Start';
+    });
+    const prog = ed || pomo.state === 'idle' ? 0 : 1 - ms / (pomo.total || 1);
+    root.querySelector('.tide').style.setProperty('--p', Math.max(0, Math.min(1, prog)).toFixed(4));
+  }
+  function pomoRoot() { return slot.querySelector('.slide[data-kind="pomodoro"]'); }
+  function pomoRender() { const r = pomoRoot(); if (r) pomoPaint(r, true); }
+  function pomoTheme() {                                    /* when time is up the slide flips colour */
+    const r = pomoRoot(), pi = pomoIdx();
+    if (!r) return;
+    const base = look[pi] || 'deep', th = pomo.state === 'done' ? (base === 'deep' ? 'paper' : 'deep') : base;
+    if (r.dataset.theme !== th) {
+      r.dataset.theme = th;
+      paintTexture(r.querySelector('.tex'), th, pi, ...dims(), textZones());
+    }
+    if (cur === pi) stage.dataset.theme = th;
+  }
+  function pomoSet(ms) { ms = Math.max(1000, Math.min(99 * 60000 + 59000, ms)); pomo.left = pomo.total = ms; pomo.mins[pomo.mode] = ms / 60000; pomo.state = 'idle'; }
+  function pomoMode(m) { pomo.mode = m; pomo.buf = ''; pomo.left = pomo.total = pomo.mins[m] * 60000; pomo.state = 'idle'; pomoTheme(); pomoRender(); }
+  function pomoStart() {
+    if (pomo.state === 'done') { const nm = pomo.mode === 'focus' ? 'break' : 'focus'; if (nm === 'focus') pomo.session++; pomoMode(nm); }
+    if (pomo.left <= 0) pomo.left = pomo.total;
+    pomo.end = Date.now() + pomo.left; pomo.state = 'running'; pomoTheme(); pomoRender();
+  }
+  function pomoPause() { pomo.left = pomoMs(); pomo.state = 'paused'; pomoRender(); }
+  function pomoToggle() { if (pomo.state === 'running') pomoPause(); else pomoStart(); }
+  function pomoReset() { pomo.buf = ''; pomo.left = pomo.total = pomo.mins[pomo.mode] * 60000; pomo.state = 'idle'; pomoTheme(); pomoRender(); }
+  function pomoCommit() { if (pomo.buf) { pomoSet(bufMs(pomo.buf)); pomo.buf = ''; pomoStart(); } else pomoToggle(); }
+  function pomoAdjust(d) {
+    if (pomo.buf) return;
+    const ms = Math.min(99 * 60000 + 59000, Math.max(1000, pomoMs() + d));
+    if (pomo.state === 'running') pomo.end = Date.now() + ms; else pomo.left = ms;
+    pomo.total = Math.max(pomo.total + d, ms); pomo.mins[pomo.mode] = pomo.total / 60000;
+    pomoRender();
+  }
+  function pomoType(ch) {
+    if (pomo.state === 'running') pomoPause();
+    if (pomo.state === 'done') pomoMode(pomo.mode);
+    let b = pomo.buf;
+    const [m, sc] = [b.split(':')[0], b.includes(':') ? b.split(':')[1] : null];
+    if (ch === ':') { if (b && sc === null) b += ':'; }
+    else if (sc === null) { if (m.length < 2) b += ch; }
+    else if (sc.length < 2) b += ch;
+    pomo.buf = b; pomoRender();
+  }
+  function pomoDone() {
+    pomo.left = 0; pomo.state = 'done';
+    chime(); pomoTheme(); pomoRender();
+    const r = pomoRoot(); if (r) { const dg = r.querySelector('.pdigits'); dg.classList.remove('pop'); void dg.offsetWidth; dg.classList.add('pop'); }
+    if (!slides[cur].pomodoro) say('Pomodoro: time’s up');
+  }
+  setInterval(() => { if (pomo.state === 'running' && Date.now() >= pomo.end) pomoDone(); pomoRender(); }, 250);
+
+  /* on-screen buttons, and tapping the digits focuses a real input (for phones) */
+  slot.addEventListener('click', (e) => {
+    const b = e.target.closest('.pbtn');
+    if (b) {
+      const a = b.dataset.act;
+      if (a === 'focus' || a === 'break') pomoMode(a);
+      else if (a === 'toggle') pomoCommit();
+      else if (a === 'reset') pomoReset();
+      else if (a === 'minus') pomoAdjust(-60000);
+      else if (a === 'plus') pomoAdjust(60000);
+      b.blur();
+      return;
+    }
+    if (e.target.closest('.pdigits')) { const i = e.target.closest('.pdigits').querySelector('.pomoin'); if (i) { i.value = pomo.buf; i.focus({ preventScroll: true }); } }
+  });
+  /* focusing the hidden input must never scroll the clipped stage */
+  document.addEventListener('scroll', (e) => {
+    const t = e.target === document ? document.scrollingElement : e.target;
+    if (t && (t.scrollLeft || t.scrollTop) && (t === stage || stage.contains(t) || t === document.scrollingElement)) { t.scrollLeft = 0; t.scrollTop = 0; }
+  }, true);
+  slot.addEventListener('focusout', (e) => { if (e.target.classList && e.target.classList.contains('pomoin')) setTimeout(resize, 150); });
+  slot.addEventListener('input', (e) => {
+    if (!e.target.classList || !e.target.classList.contains('pomoin')) return;
+    if (pomo.state === 'running') pomoPause();
+    pomo.buf = e.target.value.replace(/[^0-9:]/g, '').replace(/^:/, '').replace(/(:.*):/, '$1').replace(/^(\d{2})\d+/, '$1').replace(/:(\d{2})\d+/, ':$1');
+    e.target.value = pomo.buf; pomoRender();
+  });
+  slot.addEventListener('keydown', (e) => {
+    if (!e.target.classList || !e.target.classList.contains('pomoin')) return;
+    e.stopPropagation();
+    if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); pomoCommit(); }
+    else if (e.key === 'Escape') { pomo.buf = ''; e.target.value = ''; e.target.blur(); pomoRender(); }
+  });
+
   /* keep the screen awake while presenting */
   async function keepAwake() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) {} }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
@@ -1017,6 +1235,18 @@ const settings = { timerMinutes: 10 };
   addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (loading) { e.preventDefault(); skipLoader(); return; }
+    if (e.target && e.target.classList && e.target.classList.contains('pomoin')) return;   /* typing into the phone input */
+    if (slides[cur] && slides[cur].pomodoro && !ovKind) {                                   /* Pomodoro slide keys */
+      const k = e.key;
+      if (/^[0-9]$/.test(k) || k === ':') { e.preventDefault(); pomoType(k); return; }
+      if (k === 'Backspace' && pomo.buf) { e.preventDefault(); pomo.buf = pomo.buf.slice(0, -1); pomoRender(); return; }
+      if (k === 'Escape' && pomo.buf) { e.preventDefault(); pomo.buf = ''; pomoRender(); return; }
+      if (k === 'Enter') { e.preventDefault(); pomoCommit(); return; }
+      if (k === 'b' || k === 'B') { e.preventDefault(); pomoMode(pomo.mode === 'focus' ? 'break' : 'focus'); return; }
+      if (k === 'r' || k === 'R') { e.preventDefault(); pomoReset(); return; }
+      if (k === '[' || k === '-') { e.preventDefault(); pomoAdjust(-60000); return; }
+      if (k === ']' || k === '+' || k === '=') { e.preventDefault(); pomoAdjust(60000); return; }
+    }
     if (ovKind) {                                   /* an overlay is open: I spins again, anything else closes */
       e.preventDefault();
       if (ovKind === 'idea' && (e.key === 'i' || e.key === 'I')) spinIdea(); else closeOv();
@@ -1033,6 +1263,7 @@ const settings = { timerMinutes: 10 };
       case 'End': e.preventDefault(); go(total - 1); break;
       case 'f': case 'F': e.preventDefault(); toggleFS(); break;
       case 'c': case 'C': copyPrompt(); break;
+      case 'm': case 'M': muted = !muted; say(muted ? 'Sound off' : 'Sound on'); break;
       case 'i': case 'I': openOv('idea'); break;
       case 't': case 'T': e.shiftKey ? timerHide() : timerToggle(); break;
       case 'r': case 'R': timerReset(); break;

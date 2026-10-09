@@ -285,11 +285,12 @@ body.portrait .kicker{max-width:calc(100% - 156px)}
 
 /* prompt: types itself in, with a caret; click or tap copies */
 .prompt{position:relative;cursor:pointer}
-.prompt .wi,.prompt .qe,.prompt .caret{animation:typein 1ms steps(1,end) both;animation-delay:calc(var(--d,0) * 1ms + 260ms)}
+/* words fade in quickly, one after another. (A 1ms steps() animation looks equivalent but, with float rounding, can finish at 0.9999999 and stay hidden: never use it for reveals.) */
+.prompt .wi,.prompt .qe,.prompt .caret{animation:typein 90ms linear both;animation-delay:calc(var(--d,0) * 1ms + 260ms)}
 .prompt .qe{color:var(--panel-label);font-weight:800;margin-left:-.02em}
 .prompt .caret{
   display:inline-block;margin-left:.12em;font-weight:800;
-  animation:typein 1ms steps(1,end) both,blink 1.05s steps(1,end) infinite;
+  animation:typein 90ms linear both,blink 1.05s steps(1,end) infinite;
   animation-delay:calc(var(--d,0) * 1ms + 260ms),calc(var(--d,0) * 1ms + 260ms);
 }
 .prompt p::after{content:none}
